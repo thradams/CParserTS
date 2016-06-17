@@ -8,7 +8,8 @@ enum Tokens
     LITERALSTR,
     IDENTIFIER,
     SPACES,
-    NUMBER
+    NUMBER,
+    BREAKLINE
 }
 
 function TokenToString(tk: Tokens)
@@ -23,7 +24,8 @@ function TokenToString(tk: Tokens)
         case Tokens.LITERALSTR: return "LITERALSTR";
         case Tokens.IDENTIFIER: return "IDENTIFIER";
         case Tokens.SPACES: return "SPACES";
-        case Tokens.SPACES: return "NUMBER";
+        case Tokens.NUMBER: return "NUMBER";
+        case Tokens.BREAKLINE: return "BREAKLINE";
     }
     return "?";
 }
@@ -53,10 +55,10 @@ function Scanner_Next(pScanner: Scanner): boolean
     var ch: wchar_t = '\0';
     StrBuilder_Clear(pScanner.lexeme);
 
-    if (Stream_Next(pScanner.stream))
-    {
-        ch = pScanner.stream.currentChar;
-    }
+    //if (Stream_Next(pScanner.stream))
+    //{
+    ch = pScanner.stream.currentChar;
+    //}
 
     //Identificador
     if ((ch >= 'a' && ch <= 'z') ||
@@ -80,11 +82,11 @@ function Scanner_Next(pScanner: Scanner): boolean
                 break;
             }
         }
-        Stream_PutBack(pScanner.stream);
+        //Stream_PutBack(pScanner.stream);
         bResult = true;
     }
     //numero
-    else if ((ch >= '0' && ch <= '0') || ch == '-' || ch == '+')
+    else if ((ch >= '0' && ch <= '9') || ch == '-' || ch == '+')
     {
         StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
         pScanner.token = Tokens.NUMBER;
@@ -97,27 +99,36 @@ function Scanner_Next(pScanner: Scanner): boolean
             }
             else
             {
+                Stream_PutBack(pScanner.stream);
                 break;
             }
         }
-        Stream_PutBack(pScanner.stream);
+       
         bResult = true;
     }
     //literal
     else if (ch == '"')
     {
-       // StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+        // StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
         pScanner.token = Tokens.LITERALSTR;
         while (Stream_Next(pScanner.stream))
         {
             if (pScanner.stream.currentChar == '\"')
+            {
+                Stream_Next(pScanner.stream);
                 break;
+            }
             else if (pScanner.stream.currentChar == '\\')
             {
                 StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
                 if (!Stream_Next(pScanner.stream))
                 {
+                    //ops
                     pScanner.token = Tokens.EOF;
+                }
+                else
+                {
+                    StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
                 }
                 //se terminar ehh erro
             }
@@ -142,10 +153,11 @@ function Scanner_Next(pScanner: Scanner): boolean
             }
             else
             {
+                //Stream_PutBack(pScanner.stream);
                 break;
             }
         }
-        Stream_PutBack(pScanner.stream);
+
         bResult = true;
     }
     //comentario de linha
@@ -171,6 +183,13 @@ function Scanner_Next(pScanner: Scanner): boolean
             //poe eof de volta
             Stream_PutBack(pScanner.stream);
         }
+        bResult = true;
+    }
+    else if (ch == '\n')
+    {
+        StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+        pScanner.token = Tokens.BREAKLINE;
+        Stream_Next(pScanner.stream);
         bResult = true;
     }
 

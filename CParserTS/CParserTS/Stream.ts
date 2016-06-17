@@ -13,7 +13,14 @@ function Stream_Init(pStream: Stream, text: const_char)
 {
     pStream.position = 0;
     pStream.text = text;
-    pStream.currentChar = '\0';
+    if (text.length > 0)
+    {
+        pStream.currentChar = text.charAt(0);
+    }
+    else
+    {
+        pStream.currentChar = '\0';
+    }
 }
 
 function Stream_Destroy(pStream: Stream)
@@ -35,8 +42,10 @@ function Stream_Next(pStream: Stream): boolean
     {
         return false;
     }
-    pStream.currentChar = pStream.text.charAt(pStream.position);
+
     pStream.position++;
+    pStream.currentChar = pStream.text.charAt(pStream.position);
+
     return true;
 }
 

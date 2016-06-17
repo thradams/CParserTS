@@ -23,8 +23,16 @@ function Main()
     Scanner_Init(scanner, StrBuilder_Str(strBuilder));
     while (Scanner_Next(scanner))
     {
-        Write('\'' + TokenToString(scanner.token) +  "\' : ");
-        WriteLine('\'' + StrBuilder_Str(scanner.lexeme) + '\'');
+        var tkstr = TokenToString(scanner.token);
+        Write(tkstr);
+        for (var i = tkstr.length; i < 20; i++)
+        {
+            Write(" ");
+        
+        }
+        Write(": ");
+
+        WriteLine(JSON.stringify(StrBuilder_Str(scanner.lexeme)));
     }
     Scanner_Destroy(scanner);
     StrBuilder_Destroy(strBuilder);
