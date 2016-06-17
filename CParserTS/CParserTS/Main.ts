@@ -14,13 +14,21 @@ function Main()
 
     Stream_Destroy(stream);
 
+    var strBuilder = new StrBuilder();
+    StrBuilder_Init(strBuilder);
+
+    FileToStrBuilder("main.c", strBuilder);
+
     var scanner = new Scanner();
-    Scanner_Init(scanner, "teste");
-    //while (Scanner_Next(scanner))
-    //{
-    //    console.log('\'' + stream.currentChar + '\'');
-    //}
+    Scanner_Init(scanner, StrBuilder_Str(strBuilder));
+    while (Scanner_Next(scanner))
+    {
+        Write('\'' + TokenToString(scanner.token) +  "\' : ");
+        WriteLine('\'' + StrBuilder_Str(scanner.lexeme) + '\'');
+    }
     Scanner_Destroy(scanner);
+    StrBuilder_Destroy(strBuilder);
+
 }
 
 

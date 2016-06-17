@@ -22,6 +22,11 @@ function Stream_Destroy(pStream: Stream)
 
 function Stream_PutBack(pStream: Stream)
 {
+    if (pStream.position > 0 && pStream.position != pStream.text.length +1)
+    {
+        pStream.position--;
+        pStream.currentChar = pStream.text.charAt(pStream.position);
+    }
 }
 
 function Stream_Next(pStream: Stream): boolean

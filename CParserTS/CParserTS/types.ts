@@ -19,6 +19,15 @@ function StrBuilder_AppendWChar(pStrBuilder: StrBuilder, ch: wchar_t)
     pStrBuilder.text += ch;
 }
 
+function StrBuilder_Clear(pStrBuilder: StrBuilder)
+{
+    pStrBuilder.text = "";
+}
+
+function StrBuilder_Str(pStrBuilder: StrBuilder) :  string{
+    return pStrBuilder.text;
+}
+
 
 function StrBuilder_Destroy(pStrBuilder: StrBuilder)
 {    
