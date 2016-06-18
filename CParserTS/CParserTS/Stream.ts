@@ -44,8 +44,14 @@ function Stream_Next(pStream: Stream): boolean
     }
 
     pStream.position++;
-    pStream.currentChar = pStream.text.charAt(pStream.position);
-
+    if (pStream.position == pStream.text.length)
+    {
+        pStream.currentChar = '\0';
+    }
+    else
+    {
+      pStream.currentChar = pStream.text.charAt(pStream.position);
+    }
     return true;
 }
 
