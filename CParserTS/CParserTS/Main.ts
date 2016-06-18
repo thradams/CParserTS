@@ -38,22 +38,10 @@ function Main()
 
     WriteLine("-------------------------------------");
 
-    var scanner2 = new PrScanner();
-    PrScanner_Init(scanner2, StrBuilder_Str(strBuilder));
-    while (PrScanner_Next(scanner2))
-    {
-        var tkstr = TokenToString(PrScanner_Token(scanner2));
-        Write(tkstr);
-        for (var i = tkstr.length; i < 20; i++)
-        {
-            Write(" ");
-
-        }
-        Write(": ");
-
-        WriteLine(JSON.stringify(PrScanner_Lexeme(scanner2)));
-    }
-    PrScanner_Destroy(scanner2);
+    var parser = new Parser();
+    Parser_Init(parser, StrBuilder_Str(strBuilder));
+    Parser_Start(parser);
+    Parser_Destroy(parser);
 
 
     StrBuilder_Destroy(strBuilder);
