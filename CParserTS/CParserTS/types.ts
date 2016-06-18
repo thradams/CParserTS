@@ -3,6 +3,19 @@ type int = number;
 type const_char = string;
 type wchar_t = string;
 
+function ASSERT(x: boolean)
+{
+    if (!x)
+    {
+        alert("assert");
+    } 
+}
+
+function GetCharCode(ch: wchar_t): int
+{
+    ASSERT(ch.length == 1);
+    return ch.charCodeAt(0);
+}
 
 class StrBuilder
 {

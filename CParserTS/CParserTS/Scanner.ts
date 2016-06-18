@@ -2,52 +2,57 @@
 
 enum Tokens
 {
-    NONE,
-    EOF,
-    LINE_COMMENT,
-    COMMENT,
-    LITERALSTR,
-    IDENTIFIER,
-    SPACES,
-    NUMBER,
-    REAL,
-    BREAKLINE,
-    CHAR1, // '/' ,
+    NONE =0,
+    EOF = 1,
+    LINE_COMMENT = 2,
+    COMMENT = 3,
+    LITERALSTR = 4,
+    IDENTIFIER = 5,
+    SPACES = 6,
+    NUMBER = 7,
+    REAL = 8,
+    BREAKLINE = 9,
+    CHAR1 = 10, // '/' ,
+    CHARACTER_TABULATION = 11,// = '\t';
+    PREPROCESSOR = 12,
+    
+    //
+    EXCLAMATION_MARK = 33,// = '!';
+    QUOTATION_MARK = 34,// = '\"';
+    NUMBER_SIGN = 35,// = '#';
+    
+    DOLLAR_SIGN = 36,// = '$';
+    PERCENT_SIGN = 37,// = '%';
+    AMPERSAND = 38,// = '&';
+    APOSTROPHE = 39,// = '\'';
+    LEFT_PARENTHESIS = 40,// = '(';
+    RIGHT_PARENTHESIS = 41,// = ')';
+    ASTERISK = 42,// = '*';
+    PLUS_SIGN = 43,// = '+';
+    COMMA = 44,// = ',';
+    HYPHEN_MINUS = 45,// = '-';
+    FULL_STOP = 46,// = '.';
+    SOLIDUS = 47,// = '/';
 
-    CHARACTER_TABULATION,// = '\t';
-     
-    EXCLAMATION_MARK,// = '!';
-    QUOTATION_MARK,// = '\"';
-    NUMBER_SIGN,// = '#';
-    DOLLAR_SIGN,// = '$';
-    PERCENT_SIGN,// = '%';
-    AMPERSAND,// = '&';
-    APOSTROPHE,// = '\'';
-    LEFT_PARENTHESIS,// = '(';
-    RIGHT_PARENTHESIS,// = ')';
-    ASTERISK,// = '*';
-    PLUS_SIGN,// = '+';
-    COMMA,// = ',';
-    HYPHEN_MINUS,// = '-';
-    FULL_STOP,// = '.';
-    SOLIDUS,// = '/';
-    COLON,// = ':';
-    SEMICOLON,// = ';';
-    LESS_THAN_SIGN,// = '<';
-    EQUALS_SIGN,// = '=';
-    GREATER_THAN_SIGN,// = '>';
-    QUESTION_MARK,// = '\?';
-    COMMERCIAL_AT,// = '@';
-    LEFT_SQUARE_BRACKET,// = '[';
-    REVERSE_SOLIDUS,// = '\\';
-    RIGHT_SQUARE_BRACKET,// = ']';
-    CIRCUMFLEX_ACCENT,// = '^';
-    LOW_LINE,// = '_';
-    GRAVE_ACCENT,// = '`';
-    LEFT_CURLY_BRACKET,// = '{';
-    VERTICAL_LINE,// = '|';
-    RIGHT_CURLY_BRACKET,// = '}';
+    COLON = 58,// = ':';
+    SEMICOLON = 59,// = ';';
+    LESS_THAN_SIGN = 60,// = '<';
+    EQUALS_SIGN = 61,// = '=';
+    GREATER_THAN_SIGN = 62,// = '>';
+    QUESTION_MARK = 63,// = '\?';
+    COMMERCIAL_AT = 64,// = '@';
 
+    LEFT_SQUARE_BRACKET = 91,// = '[';
+    REVERSE_SOLIDUS = 92,// = '\\';
+    RIGHT_SQUARE_BRACKET = 93,// = ']';
+    CIRCUMFLEX_ACCENT = 94,// = '^';
+    LOW_LINE = 95,// = '_';
+    GRAVE_ACCENT = 96,// = '`';
+
+    LEFT_CURLY_BRACKET = 123,// = '{';
+    VERTICAL_LINE = 124,// = '|';
+    RIGHT_CURLY_BRACKET = 125,// = '}';
+    TILDE = 126 // ~
 }
 
 function TokenToString(tk: Tokens)
@@ -65,6 +70,7 @@ function TokenToString(tk: Tokens)
         case Tokens.NUMBER: return "NUMBER";
         case Tokens.REAL: return "REAL";
         case Tokens.BREAKLINE: return "BREAKLINE";
+        case Tokens.PREPROCESSOR: return "PREPROCESSOR";
 
         case Tokens.CHARACTER_TABULATION: return "CHARACTER_TABULATION";
 
@@ -108,13 +114,24 @@ class Scanner
     stream = new Stream();
     lexeme = new StrBuilder();
     token: Tokens;
+
+    //true antes do 1 token de cada linha
+    bLineStart: boolean;
 };
 
 function Scanner_Init(pScanner: Scanner, text: const_char)
 {
+    pScanner.bLineStart = true;
     pScanner.token = Tokens.NONE;
     Stream_Init(pScanner.stream, text);
     StrBuilder_Init(pScanner.lexeme);
+}
+
+function Scanner_Create(text: const_char): Scanner
+{
+    var p = new Scanner();
+    Scanner_Init(p, text);
+    return p;
 }
 
 function Scanner_Destroy(pScanner: Scanner)
@@ -123,30 +140,38 @@ function Scanner_Destroy(pScanner: Scanner)
     StrBuilder_Destroy(pScanner.lexeme);
 }
 
-function Scanner_Next(pScanner: Scanner): boolean
+function Scanner_Delete(pScanner: Scanner)
 {
+    Scanner_Destroy(pScanner);
+}
+
+function Scanner_Next(scanner: Scanner): boolean
+{
+    var bLineStart = scanner.bLineStart;
+    scanner.bLineStart = false;
+
     var bResult = false;
     var ch: wchar_t = '\0';
-    StrBuilder_Clear(pScanner.lexeme);
+    StrBuilder_Clear(scanner.lexeme);
 
-    ch = pScanner.stream.currentChar;
+    ch = scanner.stream.currentChar;
     
     //Identificador
     if ((ch >= 'a' && ch <= 'z') ||
         (ch >= 'A' && ch <= 'Z') ||
         ch == '_')
     {
-        StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
-        pScanner.token = Tokens.IDENTIFIER;
-        while (Stream_Next(pScanner.stream))
+        StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+        scanner.token = Tokens.IDENTIFIER;
+        while (Stream_Next(scanner.stream))
         {
-            ch = pScanner.stream.currentChar;
+            ch = scanner.stream.currentChar;
             if ((ch >= 'a' && ch <= 'z') ||
                 (ch >= 'A' && ch <= 'Z') ||
                 (ch >= '0' && ch <= '9') ||
                 ch == '_')
             {
-                StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
             }
             else
             {
@@ -159,14 +184,14 @@ function Scanner_Next(pScanner: Scanner): boolean
     //numero
     else if ((ch >= '0' && ch <= '9') || ch == '-' || ch == '+')
     {
-        StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
-        pScanner.token = Tokens.NUMBER;
-        while (Stream_Next(pScanner.stream))
+        StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+        scanner.token = Tokens.NUMBER;
+        while (Stream_Next(scanner.stream))
         {
-            ch = pScanner.stream.currentChar;
+            ch = scanner.stream.currentChar;
             if ((ch >= '0' && ch <= '9'))
             {
-                StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
             }
             else
             {
@@ -175,16 +200,16 @@ function Scanner_Next(pScanner: Scanner): boolean
             }
         }
 
-        if (pScanner.stream.currentChar == '.')
+        if (scanner.stream.currentChar == '.')
         {
-            StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
-            pScanner.token = Tokens.REAL;
-            while (Stream_Next(pScanner.stream))
+            StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+            scanner.token = Tokens.REAL;
+            while (Stream_Next(scanner.stream))
             {
-                ch = pScanner.stream.currentChar;
+                ch = scanner.stream.currentChar;
                 if ((ch >= '0' && ch <= '9'))
                 {
-                    StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                    StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
                 }
                 else
                 {
@@ -194,28 +219,28 @@ function Scanner_Next(pScanner: Scanner): boolean
             }
         }
 
-        if (pScanner.stream.currentChar == 'e' ||
-            pScanner.stream.currentChar == 'E')
+        if (scanner.stream.currentChar == 'e' ||
+            scanner.stream.currentChar == 'E')
         {
-            StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+            StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
 
-            Stream_Next(pScanner.stream);
-            if (pScanner.stream.currentChar == '-' ||
-                pScanner.stream.currentChar == '+')
+            Stream_Next(scanner.stream);
+            if (scanner.stream.currentChar == '-' ||
+                scanner.stream.currentChar == '+')
             {
-                StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
             }
             else
             {
-                Stream_PutBack(pScanner.stream);
+                Stream_PutBack(scanner.stream);
             }
 
-            while (Stream_Next(pScanner.stream))
+            while (Stream_Next(scanner.stream))
             {
-                ch = pScanner.stream.currentChar;
+                ch = scanner.stream.currentChar;
                 if ((ch >= '0' && ch <= '9'))
                 {
-                    StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                    StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
                 }
                 else
                 {
@@ -230,31 +255,31 @@ function Scanner_Next(pScanner: Scanner): boolean
     else if (ch == '"')
     {
         // StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
-        pScanner.token = Tokens.LITERALSTR;
-        while (Stream_Next(pScanner.stream))
+        scanner.token = Tokens.LITERALSTR;
+        while (Stream_Next(scanner.stream))
         {
-            if (pScanner.stream.currentChar == '\"')
+            if (scanner.stream.currentChar == '\"')
             {
-                Stream_Next(pScanner.stream);
+                Stream_Next(scanner.stream);
                 break;
             }
-            else if (pScanner.stream.currentChar == '\\')
+            else if (scanner.stream.currentChar == '\\')
             {
-                StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
-                if (!Stream_Next(pScanner.stream))
+                StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+                if (!Stream_Next(scanner.stream))
                 {
                     //ops
-                    pScanner.token = Tokens.EOF;
+                    scanner.token = Tokens.EOF;
                 }
                 else
                 {
-                    StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                    StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
                 }
                 //se terminar ehh erro
             }
             else
             {
-                StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
             }
         }
         bResult = true;
@@ -262,14 +287,14 @@ function Scanner_Next(pScanner: Scanner): boolean
     //espacos
     else if (ch == ' ' || ch == '\t') 
     {
-        StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
-        pScanner.token = Tokens.SPACES;
-        while (Stream_Next(pScanner.stream))
+        StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+        scanner.token = Tokens.SPACES;
+        while (Stream_Next(scanner.stream))
         {
-            ch = pScanner.stream.currentChar;
+            ch = scanner.stream.currentChar;
             if (ch == ' ' || ch == 'z')
             {
-                StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
             }
             else
             {
@@ -278,32 +303,42 @@ function Scanner_Next(pScanner: Scanner): boolean
             }
         }
 
+        if (scanner.stream.currentChar == '#')
+        {
+            if (bLineStart)
+            {
+                StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+                scanner.token = Tokens.PREPROCESSOR;
+                Stream_Next(scanner.stream);
+            }
+        }
+
         bResult = true;
     }
     //comentario de linha
     else if (ch == '/')
     {
-        Stream_Next(pScanner.stream);
+        Stream_Next(scanner.stream);
 
-        if (pScanner.stream.currentChar == '/')
+        if (scanner.stream.currentChar == '/')
         {
-            while (Stream_Next(pScanner.stream))
+            while (Stream_Next(scanner.stream))
             {
-                if (pScanner.stream.currentChar == '\n' ||
-                    pScanner.stream.currentChar == '\0')
+                if (scanner.stream.currentChar == '\n' ||
+                    scanner.stream.currentChar == '\0')
                 {
                     break;
                 }
                 //comentario de linha
-                StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
             }
-            pScanner.token = Tokens.LINE_COMMENT;
+            scanner.token = Tokens.LINE_COMMENT;
         }
         else
         {
             //nao eh comentario de linha eh /
-            pScanner.token = Tokens.CHAR1;
-            Stream_PutBack(pScanner.stream);
+            scanner.token = Tokens.CHAR1;
+            Stream_PutBack(scanner.stream);
         }
 
         bResult = true;
@@ -311,44 +346,45 @@ function Scanner_Next(pScanner: Scanner): boolean
     //comentario de linha   
     else if (ch == '\n')
     {
-        StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
-        pScanner.token = Tokens.BREAKLINE;
-        Stream_Next(pScanner.stream);
+        StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+        scanner.token = Tokens.BREAKLINE;
+        Stream_Next(scanner.stream);
         bResult = true;
+        scanner.bLineStart = true; 
     }
     //comentario c
     else if (ch == '/')
     {
         //olha um adiante
-        Stream_Next(pScanner.stream);
-        ch = pScanner.stream.currentChar;
+        Stream_Next(scanner.stream);
+        ch = scanner.stream.currentChar;
         if (ch == '*')
         {
-            pScanner.token = Tokens.COMMENT;
-            while (Stream_Next(pScanner.stream))
+            scanner.token = Tokens.COMMENT;
+            while (Stream_Next(scanner.stream))
             {
                 //Stream_Next(pScanner.stream);
-                if (pScanner.stream.currentChar == '*')
+                if (scanner.stream.currentChar == '*')
                 {
-                    Stream_Next(pScanner.stream);
+                    Stream_Next(scanner.stream);
 
-                    if (pScanner.stream.currentChar == '/')
+                    if (scanner.stream.currentChar == '/')
                     {   
                         //terminou
-                        Stream_Next(pScanner.stream);
+                        Stream_Next(scanner.stream);
                         break;
                     }
                     else
                     {
-                        StrBuilder_AppendWChar(pScanner.lexeme, '*');
-                        Stream_PutBack(pScanner.stream);
+                        StrBuilder_AppendWChar(scanner.lexeme, '*');
+                        Stream_PutBack(scanner.stream);
                         //StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
                     }
                 }
                 else
                 {
                     //StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
-                    StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
+                    StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
                 }
             }
 
@@ -356,25 +392,110 @@ function Scanner_Next(pScanner: Scanner): boolean
         }
         else
         {
-            StrBuilder_AppendWChar(pScanner.lexeme, '/');
-            pScanner.token = Tokens.CHAR1;
+            StrBuilder_AppendWChar(scanner.lexeme, '/');
+            scanner.token = Tokens.CHAR1;
             bResult = true;
         }
     }
     else if (ch == '#')
     {
-        pScanner.token = Tokens.NUMBER_SIGN;
-        Stream_Next(pScanner.stream);
+        StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+        if (bLineStart)
+        {
+            scanner.token = Tokens.PREPROCESSOR;
+        }
+        else
+        {
+            scanner.token = Tokens.NUMBER_SIGN;
+        }
+        Stream_Next(scanner.stream);
         bResult = true;
     }
-    else if (ch == '$')
+    else
     {
-        pScanner.token = Tokens.DOLLAR_SIGN;
-        Stream_Next(pScanner.stream);
-        bResult = true;
+        if (scanner.stream.currentChar != '\0')
+        {
+            StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+            scanner.token = <Tokens> GetCharCode(scanner.stream.currentChar);
+            Stream_Next(scanner.stream);
+            bResult = true;
+        }
+    }
+   
+   
+    return bResult;
+}
+
+
+
+
+class PrScanner
+{
+    scanner: Scanner = new Scanner();
+    constructor()
+    {
+
+    }
+}
+
+function PrScanner_Init(pPrScanner: PrScanner, text: const_char)
+{
+    Scanner_Init(pPrScanner.scanner, text);
+    //pPrScanner.token = Tokens.NONE;
+    //StrBuilder_Init(pPrScanner.lexeme);
+}
+
+function PrScanner_Destroy(pPrScanner: PrScanner)
+{
+    Scanner_Destroy(pPrScanner.scanner);
+    //StrBuilder_Destroy(pPrScanner.lexeme);
+
+}
+
+function PrScanner_Top(pPrScanner: PrScanner): Scanner
+{
+    return pPrScanner.scanner;
+}
+
+function PrScanner_Next(pPrScanner: PrScanner): boolean
+{
+    var bResult = Scanner_Next(PrScanner_Top(pPrScanner));
+    for (; ;)
+    {
+        if (PrScanner_Top(pPrScanner).token == Tokens.PREPROCESSOR)
+        {
+            while (Scanner_Next(PrScanner_Top(pPrScanner)))
+            {
+                if (PrScanner_Top(pPrScanner).token == Tokens.BREAKLINE)
+                {
+                    Scanner_Next(PrScanner_Top(pPrScanner));
+                    break;
+                }
+            }
+
+        }
+        else if (PrScanner_Top(pPrScanner).token == Tokens.IDENTIFIER)
+        {
+            //ver se eh macro
+            break;
+        }
+        else
+        {
+            break;
+        }
     }
 
     return bResult;
+}
+
+function PrScanner_Token(pPrScanner: PrScanner): Tokens
+{
+    return pPrScanner.scanner.token;
+}
+
+function PrScanner_Lexeme(pPrScanner: PrScanner): const_char
+{
+    return StrBuilder_Str(pPrScanner.scanner.lexeme);
 }
 
 
