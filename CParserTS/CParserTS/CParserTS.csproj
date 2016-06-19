@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="JItem.ts" />
     <TypeScriptCompile Include="Parser.ts" />
     <TypeScriptCompile Include="Main.ts" />
     <TypeScriptCompile Include="Scanner.ts" />

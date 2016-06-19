@@ -11,6 +11,7 @@ function ASSERT(x: boolean)
     } 
 }
 
+
 function GetCharCode(ch: wchar_t): int
 {
     ASSERT(ch.length == 1);
@@ -19,26 +20,43 @@ function GetCharCode(ch: wchar_t): int
 
 class StrBuilder
 {
-    text: string;
+   js_text: string;
 }
 
 function StrBuilder_Init(pStrBuilder: StrBuilder)
 {
-    pStrBuilder.text = "";
+    pStrBuilder.js_text = "";
 }
 
 function StrBuilder_AppendWChar(pStrBuilder: StrBuilder, ch: wchar_t)
 {
-    pStrBuilder.text += ch;
+    ASSERT(ch.length == 1);
+    pStrBuilder.js_text += ch;
+}
+
+function StrBuilder_Size(pStrBuilder: StrBuilder): number
+{
+    return pStrBuilder.js_text.length;
+
+}
+function StrBuilder_Append(pStrBuilder: StrBuilder, text: wchar_t)
+{
+    pStrBuilder.js_text += text;
 }
 
 function StrBuilder_Clear(pStrBuilder: StrBuilder)
 {
-    pStrBuilder.text = "";
+    return pStrBuilder.js_text = "";
+
+}
+
+function StrBuilder_AppendJsonText(pStrBuilder: StrBuilder, text: wchar_t)
+{
+    pStrBuilder.js_text += JSON.stringify(text);
 }
 
 function StrBuilder_Str(pStrBuilder: StrBuilder) :  string{
-    return pStrBuilder.text;
+    return pStrBuilder.js_text;
 }
 
 

@@ -2,7 +2,7 @@
 
 function FileToStrBuilder(fileName: string, strBuilder: StrBuilder)
 {
-    strBuilder.text = s_files[fileName];
+    strBuilder.js_text = s_files[fileName];
 }
 var s_out = "";
 function Write(s: string)
