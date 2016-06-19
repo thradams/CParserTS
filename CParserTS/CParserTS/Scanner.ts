@@ -2,7 +2,7 @@
 
 enum Tokens
 {
-    NONE =0,
+    NONE = 0,
     EOF = 1,
     LINE_COMMENT = 2,
     COMMENT = 3,
@@ -52,7 +52,42 @@ enum Tokens
     LEFT_CURLY_BRACKET = 123,// = '{';
     VERTICAL_LINE = 124,// = '|';
     RIGHT_CURLY_BRACKET = 125,// = '}';
-    TILDE = 126 // ~
+    TILDE = 126, // ~
+
+    ////////////////////////////////////////
+
+    AUTO = 200,
+    BREAK = 201,
+    CASE = 202,
+    CHAR = 203,
+    CONST = 204,
+    CONTINUE = 205,
+    DEFAULT = 206,
+    DO = 207,
+    DOUBLE = 208,
+    ELSE = 209,
+    ENUM = 210,
+    EXTERN = 211,
+    FLOAT = 212,
+    FOR = 213,
+    GOTO = 214,
+    IF = 215,
+    INT = 216,
+    LONG = 217,
+    REGISTER = 218,
+    RETURN = 219,
+    SHORT = 220,
+    SIGNED = 221,
+    SIZEOF = 222,
+    STATIC = 223,
+    STRUCT = 224,
+    SWITCH = 225,
+    TYPEDEF = 226,
+    UNION = 227,
+    UNSIGNED = 228,
+    VOID = 229,
+    VOLATILE = 230,
+    WHILE = 231
 }
 
 function TokenToString(tk: Tokens)
@@ -105,6 +140,41 @@ function TokenToString(tk: Tokens)
         case Tokens.LEFT_CURLY_BRACKET: return "{";//,// = '{';
         case Tokens.VERTICAL_LINE: return "|";//,// = '|';
         case Tokens.RIGHT_CURLY_BRACKET: return "}";//,// = '}';
+
+
+
+        case Tokens.AUTO: return "AUTO";
+        case Tokens.BREAK: return "BREAK";
+        case Tokens.CASE: return "CASE";
+        case Tokens.CHAR: return "CHAR";
+        case Tokens.CONST: return "CONST";
+        case Tokens.CONTINUE: return "CONTINUE";
+        case Tokens.DEFAULT: return "DEFAULT";
+        case Tokens.DO: return "DO";
+        case Tokens.DOUBLE: return "DOUBLE";
+        case Tokens.ELSE: return "ELSE";
+        case Tokens.ENUM: return "ENUM";
+        case Tokens.EXTERN: return "EXTERN";
+        case Tokens.FLOAT: return "FLOAT";
+        case Tokens.FOR: return "FOR";
+        case Tokens.GOTO: return "GOTO";
+        case Tokens.IF: return "IF";
+        case Tokens.INT: return "INT";
+        case Tokens.LONG: return "LONG";
+        case Tokens.REGISTER: return "REGISTER";
+        case Tokens.RETURN: return "RETURN";
+        case Tokens.SHORT: return "SHORT";
+        case Tokens.SIGNED: return "SIGNED";
+        case Tokens.SIZEOF: return "SIZEOF";
+        case Tokens.STATIC: return "STATIC";
+        case Tokens.STRUCT: return "STRUCT";
+        case Tokens.SWITCH: return "SWITCH";
+        case Tokens.TYPEDEF: return "TYPEDEF";
+        case Tokens.UNION: return "UNION";
+        case Tokens.UNSIGNED: return "UNSIGNED";
+        case Tokens.VOID: return "VOID";
+        case Tokens.VOLATILE: return "VOLATILE";
+        case Tokens.WHILE: return "WHILE";
 
     }
     return "?";
@@ -334,32 +404,9 @@ function Scanner_Next(scanner: Scanner): boolean
             }
             scanner.token = Tokens.LINE_COMMENT;
         }
-        else
+        else if (scanner.stream.currentChar == '*')
         {
-            //nao eh comentario de linha eh /
-            scanner.token = Tokens.CHAR1;
-            Stream_PutBack(scanner.stream);
-        }
-
-        bResult = true;
-    }
-    //comentario de linha   
-    else if (ch == '\n')
-    {
-        StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
-        scanner.token = Tokens.BREAKLINE;
-        Stream_Next(scanner.stream);
-        bResult = true;
-        scanner.bLineStart = true; 
-    }
-    //comentario c
-    else if (ch == '/')
-    {
-        //olha um adiante
-        Stream_Next(scanner.stream);
-        ch = scanner.stream.currentChar;
-        if (ch == '*')
-        {
+            
             scanner.token = Tokens.COMMENT;
             while (Stream_Next(scanner.stream))
             {
@@ -395,8 +442,24 @@ function Scanner_Next(scanner: Scanner): boolean
             StrBuilder_AppendWChar(scanner.lexeme, '/');
             scanner.token = Tokens.CHAR1;
             bResult = true;
+
+            //nao eh comentario de linha eh /
+            //scanner.token = Tokens.CHAR1;
+            //Stream_PutBack(scanner.stream);
         }
+
+        bResult = true;
     }
+    //comentario de linha   
+    else if (ch == '\n')
+    {
+        StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
+        scanner.token = Tokens.BREAKLINE;
+        Stream_Next(scanner.stream);
+        bResult = true;
+        scanner.bLineStart = true;
+    }
+    
     else if (ch == '#')
     {
         StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
@@ -421,13 +484,161 @@ function Scanner_Next(scanner: Scanner): boolean
             bResult = true;
         }
     }
-   
-   
+
+    if (scanner.token == Tokens.IDENTIFIER)
+    {
+        //Verifica keywords
+        //AUTO = 200,        
+        if (Scanner_IsLexeme(scanner, "auto"))
+        {
+            scanner.token = Tokens.AUTO;
+        }
+        else if (Scanner_IsLexeme(scanner, "break"))
+        {
+            scanner.token = Tokens.BREAK;
+        }
+        else if (Scanner_IsLexeme(scanner, "caser"))
+        {
+            scanner.token = Tokens.CASE;
+        }
+        else if (Scanner_IsLexeme(scanner, "char"))
+        {
+            scanner.token = Tokens.CHAR;
+        }
+        else if (Scanner_IsLexeme(scanner, "const"))
+        {
+            scanner.token = Tokens.CONST;
+        }
+        else if (Scanner_IsLexeme(scanner, "continue"))
+        {
+            scanner.token = Tokens.CONTINUE;
+        }
+        else if (Scanner_IsLexeme(scanner, "default"))
+        {
+            scanner.token = Tokens.DEFAULT;
+        }
+        else if (Scanner_IsLexeme(scanner, "do"))
+        {
+            scanner.token = Tokens.DO;
+        }
+        else if (Scanner_IsLexeme(scanner, "double"))
+        {
+            scanner.token = Tokens.DOUBLE;
+        }
+        else if (Scanner_IsLexeme(scanner, "else"))
+        {
+            scanner.token = Tokens.ELSE;
+        }
+        else if (Scanner_IsLexeme(scanner, "enum"))
+        {
+            scanner.token = Tokens.ENUM;
+        }
+        else if (Scanner_IsLexeme(scanner, "extern"))
+        {
+            scanner.token = Tokens.EXTERN;
+        }
+        else if (Scanner_IsLexeme(scanner, "float"))
+        {
+            scanner.token = Tokens.FLOAT;
+        }
+        else if (Scanner_IsLexeme(scanner, "for"))
+        {
+            scanner.token = Tokens.FOR;
+        }
+        else if (Scanner_IsLexeme(scanner, "goto"))
+        {
+            scanner.token = Tokens.GOTO;
+        }
+        else if (Scanner_IsLexeme(scanner, "if"))
+        {
+            scanner.token = Tokens.IF;
+        }
+        else if (Scanner_IsLexeme(scanner, "int"))
+        {
+            scanner.token = Tokens.INT;
+        }
+        else if (Scanner_IsLexeme(scanner, "long"))
+        {
+            scanner.token = Tokens.LONG;
+        }
+        else if (Scanner_IsLexeme(scanner, "register"))
+        {
+            scanner.token = Tokens.REGISTER;
+        }
+        else if (Scanner_IsLexeme(scanner, "return"))
+        {
+            scanner.token = Tokens.RETURN;
+        }
+        else if (Scanner_IsLexeme(scanner, "short"))
+        {
+            scanner.token = Tokens.SHORT;
+        }
+        else if (Scanner_IsLexeme(scanner, "signed"))
+        {
+            scanner.token = Tokens.SIGNED;
+        }
+        else if (Scanner_IsLexeme(scanner, "sizeof"))
+        {
+            scanner.token = Tokens.SIZEOF;
+        }
+        else if (Scanner_IsLexeme(scanner, "static"))
+        {
+            scanner.token = Tokens.STATIC;
+        }
+        else if (Scanner_IsLexeme(scanner, "struct"))
+        {
+            scanner.token = Tokens.STRUCT;
+        }
+        else if (Scanner_IsLexeme(scanner, "switch"))
+        {
+            scanner.token = Tokens.SWITCH;
+        }
+        else if (Scanner_IsLexeme(scanner, "typedef"))
+        {
+            scanner.token = Tokens.TYPEDEF;
+        }
+        else if (Scanner_IsLexeme(scanner, "union"))
+        {
+            scanner.token = Tokens.UNION;
+        }
+        else if (Scanner_IsLexeme(scanner, "unsigned"))
+        {
+            scanner.token = Tokens.UNSIGNED;
+        }
+        else if (Scanner_IsLexeme(scanner, "void"))
+        {
+            scanner.token = Tokens.VOID;
+        }
+        else if (Scanner_IsLexeme(scanner, "volatile"))
+        {
+            scanner.token = Tokens.VOLATILE;
+        }
+        else if (Scanner_IsLexeme(scanner, "while"))
+        {
+            scanner.token = Tokens.WHILE;
+        }
+    }
+
     return bResult;
 }
 
 
+function Scanner_Token(scanner: Scanner): Tokens
+{
+    return scanner.token;
+}
 
+function Scanner_Lexeme(scanner: Scanner): const_char
+{
+    return StrBuilder_Str(scanner.lexeme);
+}
+
+function Scanner_IsLexeme(scanner: Scanner, psz: const_char): boolean
+{
+    return StrCmp(StrBuilder_Str(scanner.lexeme), psz);
+}
+
+//////////////////////////////////////////////
 
 class PrScanner
 {
@@ -441,15 +652,11 @@ class PrScanner
 function PrScanner_Init(pPrScanner: PrScanner, text: const_char)
 {
     Scanner_Init(pPrScanner.scanner, text);
-    //pPrScanner.token = Tokens.NONE;
-    //StrBuilder_Init(pPrScanner.lexeme);
 }
 
 function PrScanner_Destroy(pPrScanner: PrScanner)
 {
     Scanner_Destroy(pPrScanner.scanner);
-    //StrBuilder_Destroy(pPrScanner.lexeme);
-
 }
 
 function PrScanner_Top(pPrScanner: PrScanner): Scanner
@@ -498,35 +705,3 @@ function PrScanner_Lexeme(pPrScanner: PrScanner): const_char
     return StrBuilder_Str(pPrScanner.scanner.lexeme);
 }
 
-
-class Parser
-{
-    scanner: PrScanner = new PrScanner();
-}
-
-function Parser_Init(parser: Parser, text: const_char)
-{
-    PrScanner_Init(parser.scanner, text);
-}
-
-function Parser_Destroy(parser: Parser)
-{
-    PrScanner_Destroy(parser.scanner);
-}
-
-function Parser_Start(parser: Parser)
-{
-    while (PrScanner_Next(parser.scanner))
-    {
-        var tkstr = TokenToString(PrScanner_Token(parser.scanner));
-        Write(tkstr);
-        for (var i = tkstr.length; i < 20; i++)
-        {
-            Write(" ");
-
-        }
-        Write(": ");
-
-        WriteLine(JSON.stringify(PrScanner_Lexeme(parser.scanner)));
-    }
-}

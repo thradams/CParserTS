@@ -1,51 +1,58 @@
 ﻿
-function Main()
+function PrintTokens(text: const_char)
 {
-    console.log('Hello world');
-
-    var stream = new Stream();
-    Stream_Init(stream, "");
-    while (Stream_Next(stream))
-    {
-        console.log('\'' + stream.currentChar + '\'');
-    }
-
-    Stream_Next(stream);
-
-    Stream_Destroy(stream);
-
-    var strBuilder = new StrBuilder();
-    StrBuilder_Init(strBuilder);
-
-    FileToStrBuilder("main.c", strBuilder);
-
     var scanner = new Scanner();
-    Scanner_Init(scanner, StrBuilder_Str(strBuilder));
+    Scanner_Init(scanner, text);
     while (Scanner_Next(scanner))
     {
-        var tkstr = TokenToString(scanner.token);
+        var tkstr = TokenToString(Scanner_Token(scanner));
         Write(tkstr);
         for (var i = tkstr.length; i < 20; i++)
         {
             Write(" ");
-        
         }
         Write(": ");
 
-        WriteLine(JSON.stringify(StrBuilder_Str(scanner.lexeme)));
+        WriteLine(JSON.stringify(Scanner_Lexeme(scanner)));
     }
     Scanner_Destroy(scanner);
+}
 
-    WriteLine("-------------------------------------");
+function PrintTokensPre(text: const_char)
+{
+    var scanner = new PrScanner();
+    PrScanner_Init(scanner, text);
+    while (PrScanner_Next(scanner))
+    {
+        var tkstr = TokenToString(PrScanner_Token(scanner));
+        Write(tkstr);
+        for (var i = tkstr.length; i < 20; i++)
+        {
+            Write(" ");
+        }
+        Write(": ");
+
+        WriteLine(JSON.stringify(PrScanner_Lexeme(scanner)));
+    }
+    PrScanner_Destroy(scanner);
+}
+
+function Main()
+{
+    var strBuilder = new StrBuilder();
+    StrBuilder_Init(strBuilder);
+
+    FileToStrBuilder("main.c", strBuilder);
+    //PrintTokens(StrBuilder_Str(strBuilder));
+    //WriteLine("-------------------------------------");
+
+    //PrintTokensPre(StrBuilder_Str(strBuilder));
 
     var parser = new Parser();
     Parser_Init(parser, StrBuilder_Str(strBuilder));
     Parser_Start(parser);
     Parser_Destroy(parser);
-
-
     StrBuilder_Destroy(strBuilder);
-
 }
 
 

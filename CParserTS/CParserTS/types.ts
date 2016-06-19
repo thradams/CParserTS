@@ -45,3 +45,8 @@ function StrBuilder_Str(pStrBuilder: StrBuilder) :  string{
 function StrBuilder_Destroy(pStrBuilder: StrBuilder)
 {    
 }
+
+function StrCmp(t1: const_char, t2: const_char) : boolean
+{
+    return t1 == t2;
+}
