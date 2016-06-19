@@ -406,7 +406,7 @@ function Scanner_Next(scanner: Scanner): boolean
         }
         else if (scanner.stream.currentChar == '*')
         {
-            
+
             scanner.token = Tokens.COMMENT;
             while (Stream_Next(scanner.stream))
             {
@@ -459,7 +459,7 @@ function Scanner_Next(scanner: Scanner): boolean
         bResult = true;
         scanner.bLineStart = true;
     }
-    
+
     else if (ch == '#')
     {
         StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
@@ -693,6 +693,36 @@ function PrScanner_Next(pPrScanner: PrScanner): boolean
     }
 
     return bResult;
+}
+
+
+
+function PrScanner_IsToken(pPrScanner: PrScanner, tk: Tokens): boolean
+{
+    return pPrScanner.scanner.token == tk;
+}
+
+function PrScanner_IsToken2(pPrScanner: PrScanner, tk1: Tokens, tk2: Tokens): boolean
+{
+    return pPrScanner.scanner.token == tk1 ||
+        pPrScanner.scanner.token == tk2;
+}
+
+function PrScanner_IsToken4(pPrScanner: PrScanner, tk1: Tokens, tk2: Tokens, tk3: Tokens, tk4: Tokens): boolean
+{
+    return pPrScanner.scanner.token == tk1 ||
+        pPrScanner.scanner.token == tk2
+    pPrScanner.scanner.token == tk3 ||
+    pPrScanner.scanner.token == tk4;
+}
+
+function PrScanner_IsToken5(pPrScanner: PrScanner, tk1: Tokens, tk2: Tokens, tk3: Tokens, tk4: Tokens, tk5: Tokens): boolean
+{
+    return pPrScanner.scanner.token == tk1 ||
+        pPrScanner.scanner.token == tk2
+    pPrScanner.scanner.token == tk3 ||
+    pPrScanner.scanner.token == tk4 ||
+    pPrScanner.scanner.token == tk5;
 }
 
 function PrScanner_Token(pPrScanner: PrScanner): Tokens
