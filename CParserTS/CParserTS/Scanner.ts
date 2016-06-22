@@ -4,12 +4,13 @@ enum Tokens
 {
     NONE = 0,
     EOF = 1,
+    TK_EndMark = 1,
     LINE_COMMENT = 2,
     COMMENT = 3,
-    LITERALSTR = 4,
-    IDENTIFIER = 5,
+    TK_string_literal = 4,
+    TK_identifier = 5,
     SPACES = 6,
-    NUMBER = 7,
+    TK_number = 7,
     REAL = 8,
     BREAKLINE = 9,
     CHAR1 = 10, // '/' ,
@@ -25,69 +26,78 @@ enum Tokens
     PERCENT_SIGN = 37,// = '%';
     AMPERSAND = 38,// = '&';
     APOSTROPHE = 39,// = '\'';
-    LEFT_PARENTHESIS = 40,// = '(';
-    RIGHT_PARENTHESIS = 41,// = ')';
-    ASTERISK = 42,// = '*';
+    TK_LEFT_PARENTHESIS = 40,// = '(';
+    TK_RIGHT_PARENTHESIS = 41,// = ')';
+    TK_ASTERISK = 42,// = '*';
     PLUS_SIGN = 43,// = '+';
-    COMMA = 44,// = ',';
+    TK_COMMA = 44,// = ',';
     HYPHEN_MINUS = 45,// = '-';
     FULL_STOP = 46,// = '.';
     SOLIDUS = 47,// = '/';
 
-    COLON = 58,// = ':';
-    SEMICOLON = 59,// = ';';
+    TK_COLON = 58,// = ':';
+    TK_SEMICOLON = 59,// = ';';
     LESS_THAN_SIGN = 60,// = '<';
-    EQUALS_SIGN = 61,// = '=';
+    TK_EQUALS_SIGN = 61,// = '=';
     GREATER_THAN_SIGN = 62,// = '>';
     QUESTION_MARK = 63,// = '\?';
     COMMERCIAL_AT = 64,// = '@';
 
-    LEFT_SQUARE_BRACKET = 91,// = '[';
+    TK_LEFT_SQUARE_BRACKET = 91,// = '[';
     REVERSE_SOLIDUS = 92,// = '\\';
-    RIGHT_SQUARE_BRACKET = 93,// = ']';
+    TK_RIGHT_SQUARE_BRACKET = 93,// = ']';
     CIRCUMFLEX_ACCENT = 94,// = '^';
     LOW_LINE = 95,// = '_';
     GRAVE_ACCENT = 96,// = '`';
 
-    LEFT_CURLY_BRACKET = 123,// = '{';
+    TK_LEFT_CURLY_BRACKET = 123,// = '{';
     VERTICAL_LINE = 124,// = '|';
-    RIGHT_CURLY_BRACKET = 125,// = '}';
+    TK_RIGHT_CURLY_BRACKET = 125,// = '}';
     TILDE = 126, // ~
 
     ////////////////////////////////////////
 
-    AUTO = 200,
+    TK_auto = 200,
     BREAK = 201,
     CASE = 202,
-    CHAR = 203,
-    CONST = 204,
+    TK_char = 203,
+    TK_const = 204,
     CONTINUE = 205,
     DEFAULT = 206,
     DO = 207,
-    DOUBLE = 208,
+    TK_double = 208,
     ELSE = 209,
-    ENUM = 210,
-    EXTERN = 211,
-    FLOAT = 212,
+    TK_enum = 210,
+    TK_extern = 211,
+    TK_float = 212,
     FOR = 213,
     GOTO = 214,
     IF = 215,
-    INT = 216,
-    LONG = 217,
-    REGISTER = 218,
+    TK_int = 216,
+    TK_long = 217,
+    TK_register = 218,
     RETURN = 219,
-    SHORT = 220,
-    SIGNED = 221,
+    TK_short = 220,
+    TK_signed = 221,
     SIZEOF = 222,
-    STATIC = 223,
-    STRUCT = 224,
+    TK_static = 223,
+    TK_struct = 224,
     SWITCH = 225,
-    TYPEDEF = 226,
-    UNION = 227,
-    UNSIGNED = 228,
-    VOID = 229,
-    VOLATILE = 230,
-    WHILE = 231
+    TK_typedef = 226,
+    TK_union = 227,
+    TK_unsigned = 228,
+    TK_void = 229,
+    TK_volatile = 230,
+    WHILE = 231,
+    TK__Thread_local = 232,
+    TK__Bool = 233,
+    TK__Complex = 234,
+    TK__Atomic = 235,
+    TK_restrict = 236,
+    TK__Static_assert = 237,
+    TK_inline = 238,
+    TK__Noreturn = 239,
+    TK__Alignas = 240,
 }
 
 function TokenToString(tk: Tokens)
@@ -99,10 +109,10 @@ function TokenToString(tk: Tokens)
         case Tokens.LINE_COMMENT: return "LINE_COMMENT";
 
         case Tokens.COMMENT: return "COMMENT";
-        case Tokens.LITERALSTR: return "LITERALSTR";
-        case Tokens.IDENTIFIER: return "IDENTIFIER";
+        case Tokens.TK_string_literal: return "LITERALSTR";
+        case Tokens.TK_identifier: return "IDENTIFIER";
         case Tokens.SPACES: return "SPACES";
-        case Tokens.NUMBER: return "NUMBER";
+        case Tokens.TK_number: return "NUMBER";
         case Tokens.REAL: return "REAL";
         case Tokens.BREAKLINE: return "BREAKLINE";
         case Tokens.PREPROCESSOR: return "PREPROCESSOR";
@@ -116,64 +126,64 @@ function TokenToString(tk: Tokens)
         case Tokens.PERCENT_SIGN: return "%";//,// = '%';
         case Tokens.AMPERSAND: return "&";//,// = '&';
         case Tokens.APOSTROPHE: return "'";//,// = '\'';
-        case Tokens.LEFT_PARENTHESIS: return "(";//,// = '(';
-        case Tokens.RIGHT_PARENTHESIS: return ")";//,// = ')';
-        case Tokens.ASTERISK: return "*";//,// = '*';
+        case Tokens.TK_LEFT_PARENTHESIS: return "(";//,// = '(';
+        case Tokens.TK_RIGHT_PARENTHESIS: return ")";//,// = ')';
+        case Tokens.TK_ASTERISK: return "*";//,// = '*';
         case Tokens.PLUS_SIGN: return "+";//,// = '+';
-        case Tokens.COMMA: return ",";//,// = ',';
+        case Tokens.TK_COMMA: return ",";//,// = ',';
         case Tokens.HYPHEN_MINUS: return "-";//,// = '-';
         case Tokens.FULL_STOP: return ".";//,// = '.';
         case Tokens.SOLIDUS: return "/";//,// = '/';
-        case Tokens.COLON: return ":";//,// = ':';
-        case Tokens.SEMICOLON: return ";";//,// = ';';
+        case Tokens.TK_COLON: return ":";//,// = ':';
+        case Tokens.TK_SEMICOLON: return ";";//,// = ';';
         case Tokens.LESS_THAN_SIGN: return "<";//,// = '<';
-        case Tokens.EQUALS_SIGN: return "=";//,// = '=';
+        case Tokens.TK_EQUALS_SIGN: return "=";//,// = '=';
         case Tokens.GREATER_THAN_SIGN: return ">";//,// = '>';
         case Tokens.QUESTION_MARK: return "?";//,// = '\?';
         case Tokens.COMMERCIAL_AT: return "@";//,// = '@';
-        case Tokens.LEFT_SQUARE_BRACKET: return "[";//,// = '[';
+        case Tokens.TK_LEFT_SQUARE_BRACKET: return "[";//,// = '[';
         case Tokens.REVERSE_SOLIDUS: return "\\";//,// = '\\';
-        case Tokens.RIGHT_SQUARE_BRACKET: return "]";//,// = ']';
+        case Tokens.TK_RIGHT_SQUARE_BRACKET: return "]";//,// = ']';
         case Tokens.CIRCUMFLEX_ACCENT: return "^";// = '^';
         case Tokens.LOW_LINE: return "_";//,// = '_';
         case Tokens.GRAVE_ACCENT: return "`";//,// = '`';
-        case Tokens.LEFT_CURLY_BRACKET: return "{";//,// = '{';
+        case Tokens.TK_LEFT_CURLY_BRACKET: return "{";//,// = '{';
         case Tokens.VERTICAL_LINE: return "|";//,// = '|';
-        case Tokens.RIGHT_CURLY_BRACKET: return "}";//,// = '}';
+        case Tokens.TK_RIGHT_CURLY_BRACKET: return "}";//,// = '}';
 
 
 
-        case Tokens.AUTO: return "AUTO";
+        case Tokens.TK_auto: return "AUTO";
         case Tokens.BREAK: return "BREAK";
         case Tokens.CASE: return "CASE";
-        case Tokens.CHAR: return "CHAR";
-        case Tokens.CONST: return "CONST";
+        case Tokens.TK_char: return "CHAR";
+        case Tokens.TK_const: return "CONST";
         case Tokens.CONTINUE: return "CONTINUE";
         case Tokens.DEFAULT: return "DEFAULT";
         case Tokens.DO: return "DO";
-        case Tokens.DOUBLE: return "DOUBLE";
+        case Tokens.TK_double: return "DOUBLE";
         case Tokens.ELSE: return "ELSE";
-        case Tokens.ENUM: return "ENUM";
-        case Tokens.EXTERN: return "EXTERN";
-        case Tokens.FLOAT: return "FLOAT";
+        case Tokens.TK_enum: return "ENUM";
+        case Tokens.TK_extern: return "EXTERN";
+        case Tokens.TK_float: return "FLOAT";
         case Tokens.FOR: return "FOR";
         case Tokens.GOTO: return "GOTO";
         case Tokens.IF: return "IF";
-        case Tokens.INT: return "INT";
-        case Tokens.LONG: return "LONG";
-        case Tokens.REGISTER: return "REGISTER";
+        case Tokens.TK_int: return "INT";
+        case Tokens.TK_long: return "LONG";
+        case Tokens.TK_register: return "REGISTER";
         case Tokens.RETURN: return "RETURN";
-        case Tokens.SHORT: return "SHORT";
-        case Tokens.SIGNED: return "SIGNED";
+        case Tokens.TK_short: return "SHORT";
+        case Tokens.TK_signed: return "SIGNED";
         case Tokens.SIZEOF: return "SIZEOF";
-        case Tokens.STATIC: return "STATIC";
-        case Tokens.STRUCT: return "STRUCT";
+        case Tokens.TK_static: return "STATIC";
+        case Tokens.TK_struct: return "STRUCT";
         case Tokens.SWITCH: return "SWITCH";
-        case Tokens.TYPEDEF: return "TYPEDEF";
-        case Tokens.UNION: return "UNION";
-        case Tokens.UNSIGNED: return "UNSIGNED";
-        case Tokens.VOID: return "VOID";
-        case Tokens.VOLATILE: return "VOLATILE";
+        case Tokens.TK_typedef: return "TYPEDEF";
+        case Tokens.TK_union: return "UNION";
+        case Tokens.TK_unsigned: return "UNSIGNED";
+        case Tokens.TK_void: return "VOID";
+        case Tokens.TK_volatile: return "VOLATILE";
         case Tokens.WHILE: return "WHILE";
 
     }
@@ -232,7 +242,7 @@ function Scanner_Next(scanner: Scanner): boolean
         ch == '_')
     {
         StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
-        scanner.token = Tokens.IDENTIFIER;
+        scanner.token = Tokens.TK_identifier;
         while (Stream_Next(scanner.stream))
         {
             ch = scanner.stream.currentChar;
@@ -255,7 +265,7 @@ function Scanner_Next(scanner: Scanner): boolean
     else if ((ch >= '0' && ch <= '9') || ch == '-' || ch == '+')
     {
         StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
-        scanner.token = Tokens.NUMBER;
+        scanner.token = Tokens.TK_number;
         while (Stream_Next(scanner.stream))
         {
             ch = scanner.stream.currentChar;
@@ -325,7 +335,7 @@ function Scanner_Next(scanner: Scanner): boolean
     else if (ch == '"')
     {
         // StrBuilder_AppendWChar(pScanner.lexeme, pScanner.stream.currentChar);
-        scanner.token = Tokens.LITERALSTR;
+        scanner.token = Tokens.TK_string_literal;
         while (Stream_Next(scanner.stream))
         {
             if (scanner.stream.currentChar == '\"')
@@ -485,13 +495,13 @@ function Scanner_Next(scanner: Scanner): boolean
         }
     }
 
-    if (scanner.token == Tokens.IDENTIFIER)
+    if (scanner.token == Tokens.TK_identifier)
     {
         //Verifica keywords
         //AUTO = 200,        
         if (Scanner_IsLexeme(scanner, "auto"))
         {
-            scanner.token = Tokens.AUTO;
+            scanner.token = Tokens.TK_auto;
         }
         else if (Scanner_IsLexeme(scanner, "break"))
         {
@@ -503,11 +513,11 @@ function Scanner_Next(scanner: Scanner): boolean
         }
         else if (Scanner_IsLexeme(scanner, "char"))
         {
-            scanner.token = Tokens.CHAR;
+            scanner.token = Tokens.TK_char;
         }
         else if (Scanner_IsLexeme(scanner, "const"))
         {
-            scanner.token = Tokens.CONST;
+            scanner.token = Tokens.TK_const;
         }
         else if (Scanner_IsLexeme(scanner, "continue"))
         {
@@ -523,7 +533,7 @@ function Scanner_Next(scanner: Scanner): boolean
         }
         else if (Scanner_IsLexeme(scanner, "double"))
         {
-            scanner.token = Tokens.DOUBLE;
+            scanner.token = Tokens.TK_double;
         }
         else if (Scanner_IsLexeme(scanner, "else"))
         {
@@ -531,15 +541,15 @@ function Scanner_Next(scanner: Scanner): boolean
         }
         else if (Scanner_IsLexeme(scanner, "enum"))
         {
-            scanner.token = Tokens.ENUM;
+            scanner.token = Tokens.TK_enum;
         }
         else if (Scanner_IsLexeme(scanner, "extern"))
         {
-            scanner.token = Tokens.EXTERN;
+            scanner.token = Tokens.TK_extern;
         }
         else if (Scanner_IsLexeme(scanner, "float"))
         {
-            scanner.token = Tokens.FLOAT;
+            scanner.token = Tokens.TK_float;
         }
         else if (Scanner_IsLexeme(scanner, "for"))
         {
@@ -555,15 +565,15 @@ function Scanner_Next(scanner: Scanner): boolean
         }
         else if (Scanner_IsLexeme(scanner, "int"))
         {
-            scanner.token = Tokens.INT;
+            scanner.token = Tokens.TK_int;
         }
         else if (Scanner_IsLexeme(scanner, "long"))
         {
-            scanner.token = Tokens.LONG;
+            scanner.token = Tokens.TK_long;
         }
         else if (Scanner_IsLexeme(scanner, "register"))
         {
-            scanner.token = Tokens.REGISTER;
+            scanner.token = Tokens.TK_register;
         }
         else if (Scanner_IsLexeme(scanner, "return"))
         {
@@ -571,11 +581,11 @@ function Scanner_Next(scanner: Scanner): boolean
         }
         else if (Scanner_IsLexeme(scanner, "short"))
         {
-            scanner.token = Tokens.SHORT;
+            scanner.token = Tokens.TK_short;
         }
         else if (Scanner_IsLexeme(scanner, "signed"))
         {
-            scanner.token = Tokens.SIGNED;
+            scanner.token = Tokens.TK_signed;
         }
         else if (Scanner_IsLexeme(scanner, "sizeof"))
         {
@@ -583,11 +593,11 @@ function Scanner_Next(scanner: Scanner): boolean
         }
         else if (Scanner_IsLexeme(scanner, "static"))
         {
-            scanner.token = Tokens.STATIC;
+            scanner.token = Tokens.TK_static;
         }
         else if (Scanner_IsLexeme(scanner, "struct"))
         {
-            scanner.token = Tokens.STRUCT;
+            scanner.token = Tokens.TK_struct;
         }
         else if (Scanner_IsLexeme(scanner, "switch"))
         {
@@ -595,23 +605,23 @@ function Scanner_Next(scanner: Scanner): boolean
         }
         else if (Scanner_IsLexeme(scanner, "typedef"))
         {
-            scanner.token = Tokens.TYPEDEF;
+            scanner.token = Tokens.TK_typedef;
         }
         else if (Scanner_IsLexeme(scanner, "union"))
         {
-            scanner.token = Tokens.UNION;
+            scanner.token = Tokens.TK_union;
         }
         else if (Scanner_IsLexeme(scanner, "unsigned"))
         {
-            scanner.token = Tokens.UNSIGNED;
+            scanner.token = Tokens.TK_unsigned;
         }
         else if (Scanner_IsLexeme(scanner, "void"))
         {
-            scanner.token = Tokens.VOID;
+            scanner.token = Tokens.TK_void;
         }
         else if (Scanner_IsLexeme(scanner, "volatile"))
         {
-            scanner.token = Tokens.VOLATILE;
+            scanner.token = Tokens.TK_volatile;
         }
         else if (Scanner_IsLexeme(scanner, "while"))
         {
@@ -681,10 +691,15 @@ function PrScanner_Next(pPrScanner: PrScanner): boolean
             }
 
         }
-        else if (PrScanner_Top(pPrScanner).token == Tokens.IDENTIFIER)
+        else if (PrScanner_Top(pPrScanner).token == Tokens.TK_identifier)
         {
             //ver se eh macro
             break;
+        }
+        else if (PrScanner_IsToken(pPrScanner, Tokens.SPACES) ||
+                 PrScanner_IsToken(pPrScanner, Tokens.BREAKLINE))
+        {
+            Scanner_Next(pPrScanner.scanner);
         }
         else
         {
@@ -708,22 +723,6 @@ function PrScanner_IsToken2(pPrScanner: PrScanner, tk1: Tokens, tk2: Tokens): bo
         pPrScanner.scanner.token == tk2;
 }
 
-function PrScanner_IsToken4(pPrScanner: PrScanner, tk1: Tokens, tk2: Tokens, tk3: Tokens, tk4: Tokens): boolean
-{
-    return pPrScanner.scanner.token == tk1 ||
-        pPrScanner.scanner.token == tk2
-    pPrScanner.scanner.token == tk3 ||
-    pPrScanner.scanner.token == tk4;
-}
-
-function PrScanner_IsToken5(pPrScanner: PrScanner, tk1: Tokens, tk2: Tokens, tk3: Tokens, tk4: Tokens, tk5: Tokens): boolean
-{
-    return pPrScanner.scanner.token == tk1 ||
-        pPrScanner.scanner.token == tk2
-    pPrScanner.scanner.token == tk3 ||
-    pPrScanner.scanner.token == tk4 ||
-    pPrScanner.scanner.token == tk5;
-}
 
 function PrScanner_Token(pPrScanner: PrScanner): Tokens
 {

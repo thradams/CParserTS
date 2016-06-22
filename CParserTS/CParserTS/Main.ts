@@ -50,7 +50,24 @@ function Main()
 
     var parser = new Parser();
     Parser_Init(parser, StrBuilder_Str(strBuilder));
-    Parser_Start(parser);
+    Next(parser);
+    var result = Main_Main(parser);
+    if (result == RESULT_OK)
+    {
+        WriteLine("Succeeded");
+    }
+    else
+    {
+        
+
+        if (result == RESULT_EOF)
+            WriteLine("EOF");
+        else
+            WriteLine("Failed");
+        Write("Lexeme =");
+        WriteLine(JSON.stringify(Lexeme(parser)));
+        
+    }
     Parser_Destroy(parser);
     StrBuilder_Destroy(strBuilder);
 }

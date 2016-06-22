@@ -10,7 +10,7 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <TypeScriptToolsVersion>1.5</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>1.8</TypeScriptToolsVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="grammar.txt" />
     <Content Include="index.html" />
     <Content Include="web.config" />
   </ItemGroup>
@@ -31,6 +32,7 @@
     <TypeScriptCompile Include="JItem.ts" />
     <TypeScriptCompile Include="Parser.ts" />
     <TypeScriptCompile Include="Main.ts" />
+    <TypeScriptCompile Include="MainParser.ts" />
     <TypeScriptCompile Include="Scanner.ts" />
     <TypeScriptCompile Include="Stream.ts" />
     <TypeScriptCompile Include="types.ts" />

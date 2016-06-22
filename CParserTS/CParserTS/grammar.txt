@@ -1,0 +1,313 @@
+﻿
+//tklgen.exe grammar.txt -js -at
+
+module Main
+{
+  language Main
+  {
+
+    //=============Lexical elements
+
+    //========== Keywords
+
+    //========= Identifiers
+
+    //==Universal character names
+
+    //=====Constants
+
+    syntax Enumeration_Constant = identifier;
+
+    //====== String literals
+
+    //======Punctuators
+
+    //===Header names
+
+    //Preprocessing numbers
+
+    //=========Expressions==========
+
+
+
+
+    //A.2.2 =============== Declarations =================
+
+    //ok
+    syntax Declaration =
+    Declaration_Specifiers Init_Declarator_List_Opt ';' |
+    Static_Assert_Declaration;
+
+    //ok
+    syntax Declaration_Specifiers =
+    Storage_Class_Specifier Declaration_SpecifiersOpt |
+    Type_Specifier          Declaration_SpecifiersOpt |
+    Type_Qualifier          Declaration_SpecifiersOpt |
+    Function_Specifier      Declaration_SpecifiersOpt |
+    Alignment_Specifier     Declaration_SpecifiersOpt;
+
+    //ok
+    syntax Init_Declarator_List_Opt =
+    Init_Declarator_List | empty;
+
+    //ok
+    syntax Init_Declarator_List =
+    Init_Declarator |
+    Init_Declarator_List ',' Init_Declarator;
+
+    //ok
+    syntax Init_Declarator =
+    Declarator |
+    Declarator '=' Initializer;
+
+    // ========= Storage-class specifiers =========
+
+    //ok
+    syntax Storage_Class_Specifier =
+    typedef |
+    extern  |
+    static  |
+    _Thread_local |
+    auto |
+    register;
+
+    //============
+
+    // ========= Type specifiers =========
+
+    //ok
+    syntax Type_Specifier =
+    void |
+    char |
+    short |
+    int |
+    long |
+    float |
+    double |
+    signed |
+    unsigned |
+    _Bool |
+    _Complex  |
+    Atomic_Type_Specifier |
+    Struct_Or_Union_Specifier |
+    Enum_Specifier |
+    Typedef_Name
+    ;
+    //===============
+
+    // ======== 6.7.2.1 Structure and union specifiers
+
+    //ok
+    syntax Struct_Or_Union_Specifier =
+    Struct_Or_Union IdentifierOpt '{' Struct_Declaration_List '}' |
+    Struct_Or_Union identifier;
+
+    //ok
+    syntax Struct_Declarator_ListOpt =
+    Struct_Declaration_List | empty;
+
+    //ok
+    syntax Struct_Declaration_List =
+    Struct_Declaration |
+    Struct_Declaration_List Struct_Declaration;
+
+    //ok
+    syntax Struct_Declaration =
+    Specifier_Qualifier_List Struct_Declarator_ListOpt ';' |
+    Static_Assert_Declaration;
+
+    //ok
+    syntax Specifier_Qualifier_ListOpt =
+    Specifier_Qualifier_List | empty;
+
+    //ok
+    syntax Specifier_Qualifier_List =
+    Type_Specifier Specifier_Qualifier_ListOpt |
+    Type_Qualifier Specifier_Qualifier_ListOpt;
+
+    //ok
+    syntax Struct_Declarator_List =
+    Struct_Declarator |
+    Struct_Declarator_List ','  Struct_Declarator;
+
+    //ok
+    syntax DeclaratorOpt =
+    Declarator | empty;
+
+    //ok
+    syntax Declarator =
+    PointerOpt Direct_Declarator;
+
+    syntax Direct_Declarator =
+    identifier |
+    '(' Declarator ')' |
+    Direct_Declarator '[' Type_Qualifier_ListOpt Assignment_ExpressionOpt ']' |
+    Direct_Declarator '[' static Type_Qualifier_ListOpt Assignment_Expression ']' |
+    Direct_Declarator '[' Type_Qualifier_List static Assignment_Expression ']' |
+    Direct_Declarator '[' Type_Qualifier_ListOpt '*' ']';// |
+    //Direct_Declarator  '(' Parameter_Type_List ')' |
+    //Direct_Declarator  '(' Identifier_ListOpt ')' ;
+
+    //ok
+    syntax Parameter_Type_List =
+    Parameter_List |
+    Parameter_List ','  dotdotdot;
+
+    //ok
+    syntax ParameterList =
+    Parameter_Declaration |
+    Parameter_List ',' Parameter_Declaration;
+
+    //ok
+    syntax Parameter_Declaration =
+    Declaration_Specifiers Declarator |
+    Declaration_Specifiers Abstract_DeclaratorOpt;
+
+    //ok
+    syntax Type_Qualifier_ListOpt =
+    Type_Qualifier_List | empty;
+
+    //ok
+    syntax Type_Qualifier_List =
+    Type_Qualifier |
+    Type_Qualifier_List Type_Qualifier;
+
+
+    syntax PointerOpt =
+    Pointer | empty;
+
+	/*
+	pointer
+	: '*'
+	| '*' type_qualifier_list
+	| '*' pointer
+	| '*' type_qualifier_list pointer
+	;
+	*/
+
+    //ok modificado
+    syntax Pointer =
+    '*' Type_Qualifier_ListOpt |
+    '*' Type_Qualifier_ListOpt Pointer;
+
+    //ok
+    syntax Identifier_List =
+    identifier |
+    Identifier_List ',' identifier;
+
+	//ok
+    syntax Struct_Declarator =
+    Declarator |
+    DeclaratorOpt ':'  Constant_Expression;
+
+    //============
+
+    /// ========== Enumeration specifiers ========
+
+
+
+    syntax Enum_Specifier =
+    enum IdentifierOpt '{' Enumerator_List     '}' |
+    enum IdentifierOpt '{' Enumerator_List ',' '}' |
+    enum identifier;
+
+    syntax Enumerator_List =
+    Enumerator |
+    EnumeratorList ',' Enumerator;
+
+    syntax Enumerator =
+    Enumeration_Constant |
+    Enumeration_Constant '=' Constant_Expression;
+
+
+    //========= Atomic type specifiers ==============
+
+    syntax Atomic_Type_Specifier =
+    _Atomic '(' Type_Name ')';
+
+
+    //========== Type qualifiers ============
+
+    syntax Type_Qualifier =
+    const |
+    restrict |
+    volatile |
+    _Atomic;
+
+    // ======== Function specifiers =========
+
+    syntax Function_Specifier =
+    inline |
+    _Noreturn;
+
+    //==== Alignment specifier =====
+
+    syntax Alignment_Specifier =
+    _Alignas '(' Type_Name ')' |
+    _Alignas '(' Constant_Expression ')';
+
+    //======= Declarators
+
+    syntax Initializer =
+    Assignment_Expression |
+    '{' Initializer_List '}'
+    '{' Initializer_List ',' '}' ';';
+
+    syntax Declaration_SpecifiersOpt =
+    Declaration_Specifiers | empty;
+
+
+    syntax Main = Declaration;
+
+
+    syntax Constant_Expression = number ; //TODO
+
+    syntax Static_Assert_Declaration =
+    _Static_assert '(' Constant_Expression ',' string_literal ')' ';';
+
+
+
+    //=============TypeName==========
+    syntax Type_Name =
+    Specifier_Qualifier_List Abstract_DeclaratorOpt;
+
+
+
+
+    syntax Abstract_DeclaratorOpt =
+    Abstract_Declarator  | empty;
+
+    syntax Abstract_Declarator =
+    Pointer |
+    PointerOpt Direct_Abstract_Declarator;
+
+    syntax Direct_Abstract_Declarator =
+    '(' Abstract_Declarator ')'  |
+    Direct_Abstract_DeclaratorOpt  | '[' Type_Qualifier_ListOpt Assignment_ExpressionOpt ']'
+    ;
+
+
+
+    syntax IdentifierOpt = identifier | empty;
+
+
+
+    syntax Struct_Or_Union =
+    struct | union;
+
+
+
+    syntax Typedef_Name = identifier;
+
+
+    syntax Assignment_Expression = empty; //TODO;
+    syntax Assignment_ExpressionOpt =
+    Assignment_Expression | empty;
+
+
+
+
+    syntax Initializer_List = empty; //TODO
+  }
+}
+

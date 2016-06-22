@@ -210,3 +210,16 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+*.js
+*.map
+/CParserTS/CParserTS/MainLex.h
+/CParserTS/CParserTS/MainLex.cpp
+/CParserTS/CParserTS/MainParser.h
+/CParserTS/CParserTS/ParserLex.cpp
+/CParserTS/CParserTS/ParserLex.h
+/CParserTS/CParserTS/ParserMainLex.cpp
+/CParserTS/CParserTS/ParserMainLex.h
+/CParserTS/CParserTS/ParserMainParser.h
+/CParserTS/CParserTS/TesteLex.cpp
+/CParserTS/CParserTS/TesteLex.h
+/CParserTS/CParserTS/TesteParser.h
