@@ -16,7 +16,7 @@ enum Tokens
     CHAR1 = 10, // '/' ,
     CHARACTER_TABULATION = 11,// = '\t';
     PREPROCESSOR = 12,
-
+    Error = 13, //reservado para erro
     
 
     //
@@ -61,7 +61,7 @@ enum Tokens
 
     TK_auto = 200,
     BREAK = 201,
-    CASE = 202,
+    TK_case = 202,
     TK_char = 203,
     TK_const = 204,
     CONTINUE = 205,
@@ -157,7 +157,7 @@ function TokenToString(tk: Tokens)
 
         case Tokens.TK_auto: return "AUTO";
         case Tokens.BREAK: return "BREAK";
-        case Tokens.CASE: return "CASE";
+        case Tokens.TK_case: return "CASE";
         case Tokens.TK_char: return "CHAR";
         case Tokens.TK_const: return "CONST";
         case Tokens.CONTINUE: return "CONTINUE";
@@ -471,7 +471,11 @@ function Scanner_Next(scanner: Scanner): boolean
         bResult = true;
         scanner.bLineStart = true;
     }
-
+    else if (ch == '\0')
+    {
+        scanner.token = Tokens.EOF;        
+        bResult = false;     
+    }
     else if (ch == '#')
     {
         StrBuilder_AppendWChar(scanner.lexeme, scanner.stream.currentChar);
@@ -511,7 +515,7 @@ function Scanner_Next(scanner: Scanner): boolean
         }
         else if (Scanner_IsLexeme(scanner, "caser"))
         {
-            scanner.token = Tokens.CASE;
+            scanner.token = Tokens.TK_case;
         }
         else if (Scanner_IsLexeme(scanner, "char"))
         {
@@ -699,7 +703,9 @@ function PrScanner_Next(pPrScanner: PrScanner): boolean
             break;
         }
         else if (PrScanner_IsToken(pPrScanner, Tokens.SPACES) ||
-                 PrScanner_IsToken(pPrScanner, Tokens.BREAKLINE))
+                 PrScanner_IsToken(pPrScanner, Tokens.BREAKLINE) ||
+                 PrScanner_IsToken(pPrScanner, Tokens.COMMENT) ||
+                  PrScanner_IsToken(pPrScanner, Tokens.LINE_COMMENT))
         {
             Scanner_Next(pPrScanner.scanner);
         }

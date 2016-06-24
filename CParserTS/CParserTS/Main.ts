@@ -52,22 +52,17 @@ function Main()
     Parser_Init(parser, StrBuilder_Str(strBuilder));
     Next(parser);
     var result = Main_Main(parser);
-    if (result == RESULT_OK)
+
+    if (HasErrors(parser))
     {
-        WriteLine("Succeeded");
+        WriteLine("Error : ");
+        WriteLine(GetErrorMessage(parser));
     }
     else
     {
-        
-
-        if (result == RESULT_EOF)
-            WriteLine("EOF");
-        else
-            WriteLine("Failed");
-        Write("Lexeme =");
-        WriteLine(JSON.stringify(Lexeme(parser)));
-        
+        WriteLine("Succeeded");
     }
+
     Parser_Destroy(parser);
     StrBuilder_Destroy(strBuilder);
 }
