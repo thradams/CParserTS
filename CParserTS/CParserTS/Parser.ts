@@ -2,6 +2,7 @@
 class Parser
 {
     scanner: PrScanner = new PrScanner();
+    debug_string : string;
 }
 
 function Parser_Init(parser: Parser, text: const_char)
@@ -20,21 +21,38 @@ const RESULT_EMPTY = 1;
 const RESULT_FAIL = 2;
 const RESULT_EOF = 3;
 
-//function Check(result: Result): boolean
-//{
-    //return result == RESULT_OK || result == RESULT_EMPTY;
-//}
+function Check(result: Result): boolean
+{
+    return result == RESULT_OK || result == RESULT_EMPTY;
+}
 
-function Match(parser: Parser, tk: Tokens): Result
+function Failed(result: Result): boolean
+{
+    return result != RESULT_OK && result != RESULT_EMPTY;
+}
+
+
+function Match(parser: Parser): Result
+{
+    var b = Next(parser);
+
+    if (!b)
+    {
+        return RESULT_EOF;
+    }
+
+    return RESULT_OK;
+}
+
+function MatchToken(parser: Parser, tk: Tokens): Result
 {
     if (tk != parser.scanner.scanner.token)
     {
         return RESULT_FAIL;
     }
 
-    var b = PrScanner_Next(parser.scanner);
-    
-   
+    var b = Next(parser);
+        
     if (!b)
     {
         return RESULT_EOF;
@@ -60,6 +78,8 @@ function Token(parser: Parser): Tokens
 
 function Next(parser: Parser): boolean
 {
-    return PrScanner_Next(parser.scanner);
+    var b = PrScanner_Next(parser.scanner);
+    parser.debug_string = parser.scanner.scanner.lexeme.js_text;
+    return b;
 }
 ////////////////////////////////
