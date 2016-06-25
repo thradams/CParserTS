@@ -94,12 +94,20 @@ function MatchToken(parser: Parser, tk: Tokens): Result
 
 function SetError(parser: Parser, message: const_char)
 {
-    parser.bError = true;
-    StrBuilder_AppendInt(parser.ErrorMessage, PrScanner_Line(parser.scanner));
-    StrBuilder_Append(parser.ErrorMessage, ", ");
-    StrBuilder_AppendInt(parser.ErrorMessage, PrScanner_Col(parser.scanner));
-    StrBuilder_Append(parser.ErrorMessage, " : ");
-    StrBuilder_Append(parser.ErrorMessage, message);
+    if (!parser.bError)
+    {
+        parser.bError = true;
+        StrBuilder_AppendInt(parser.ErrorMessage, PrScanner_Line(parser.scanner));
+        StrBuilder_Append(parser.ErrorMessage, ", ");
+        StrBuilder_AppendInt(parser.ErrorMessage, PrScanner_Col(parser.scanner));
+        StrBuilder_Append(parser.ErrorMessage, " : ");
+        StrBuilder_Append(parser.ErrorMessage, message);
+    }
+    else
+    {
+         //ja esta com erro entao eh ruido...
+        parser.bError = true;
+    }
 }
 
 function Lexeme(parser: Parser): const_char

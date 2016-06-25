@@ -18,9 +18,19 @@ function Expression(ctx: Parser)
             //abre outra expressao
             Expression(ctx);
         }
+        else if (Token(ctx) == Tokens.TK_LEFT_SQUARE_BRACKET)
+        {
+            Match(ctx);
+            //abre outra expressao
+            Expression(ctx);
+        }
         else if (Token(ctx) == Tokens.TK_RIGHT_PARENTHESIS)
         {
             //termino de expressao            
+            break;
+        }
+        else if (Token(ctx) == Tokens.TK_RIGHT_SQUARE_BRACKET)
+        {
             break;
         }
         Match(ctx);
@@ -773,13 +783,42 @@ function Direct_Declarator(ctx: Parser)
         }
         else if (Token(ctx) == Tokens.TK_LEFT_SQUARE_BRACKET)
         {
-            //[
-            Match(ctx);
             //s_out += " Array";
             //s_out += Lexeme(ctx);
             //s_out += "] of";
             //]
+
+            //[
             Match(ctx);
+            if (Type_Qualifier(ctx))
+            {
+                //direct-declarator [ type-qualifier-list static assignment-expression ]
+                MatchToken(ctx, Tokens.TK_static);                
+                Assignment_Expression(ctx);
+            }
+            else
+            {
+                if (Token(ctx) == Tokens.TK_ASTERISK)
+                {
+                    //direct-declarator [ type-qualifier-listopt * ]
+                }
+                else if (Token(ctx) == Tokens.TK_static)
+                {
+                    //direct-declarator [ static type-qualifier-listopt assignment-expression ]
+                    Type_Qualifier_ListOpt(ctx);
+                    Assignment_Expression(ctx);
+                }
+                else
+                {
+                    //direct-declarator [ type-qualifier-listopt assignment-expressionopt ]
+                    if (Token(ctx) != Tokens.TK_RIGHT_SQUARE_BRACKET)
+                    {
+                        Assignment_Expression(ctx);
+                    }
+                }                
+            }
+                                   
+            MatchToken(ctx, Tokens.TK_RIGHT_SQUARE_BRACKET);
         }
         else
         {
