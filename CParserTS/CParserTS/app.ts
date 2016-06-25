@@ -4,23 +4,23 @@ function FileToStrBuilder(fileName: string, strBuilder: StrBuilder)
 {
     strBuilder.js_text = s_files[fileName];
 }
-var s_out = "";
+var s_WriteOutputString = "";
 function Write(s: string)
 {
-    s_out += s;
+    s_WriteOutputString += s;
 }
 function WriteLine(s: string)
 {
-    s_out += s + "\n";
+    s_WriteOutputString += s + "\n";
 }
 
 
 function ButtonClick()
 {
-    s_out = "";
+    s_WriteOutputString = "";
     s_files["main.c"] = (<HTMLInputElement> document.getElementById("InputText")).value;
     Main();
-    (<HTMLInputElement> document.getElementById("OuputText")).value = s_out;
+    (<HTMLInputElement> document.getElementById("OuputText")).value = s_WriteOutputString;
 }
 
 window.onload = () => {

@@ -44,6 +44,12 @@ function StrBuilder_Append(pStrBuilder: StrBuilder, text: wchar_t)
     pStrBuilder.js_text += text;
 }
 
+function StrBuilder_AppendInt(pStrBuilder: StrBuilder, n: int)
+{
+    pStrBuilder.js_text += n;
+}
+
+
 function StrBuilder_Clear(pStrBuilder: StrBuilder)
 {
     return pStrBuilder.js_text = "";

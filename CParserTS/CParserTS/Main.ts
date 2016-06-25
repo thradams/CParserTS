@@ -46,7 +46,7 @@ function Main()
     //PrintTokens(StrBuilder_Str(strBuilder));
     //WriteLine("-------------------------------------");
 
-    PrintTokensPre(StrBuilder_Str(strBuilder));
+    //PrintTokensPre(StrBuilder_Str(strBuilder));
 
     var parser = new Parser();
     Parser_Init(parser, StrBuilder_Str(strBuilder));
@@ -55,7 +55,6 @@ function Main()
 
     if (HasErrors(parser))
     {
-        WriteLine("Error : ");
         WriteLine(GetErrorMessage(parser));
     }
     else

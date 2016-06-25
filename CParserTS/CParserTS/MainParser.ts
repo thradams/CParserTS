@@ -314,7 +314,7 @@ function Compound_Statement(ctx: Parser)
     */
     MatchToken(ctx, Tokens.TK_LEFT_CURLY_BRACKET);
 
-    if (Token(ctx) != Tokens.TK_LEFT_CURLY_BRACKET)
+    if (Token(ctx) != Tokens.TK_RIGHT_CURLY_BRACKET)
     {
         Block_Item_List(ctx);
     }
@@ -665,7 +665,7 @@ function Storage_Class_Specifier(ctx: Parser): boolean
     return bResult;
 }
 
-var s_out = "";
+
 
 function Parameter_List(ctx: Parser)
 {
@@ -762,7 +762,7 @@ function Direct_Declarator(ctx: Parser)
     {
         if (Token(ctx) == Tokens.TK_LEFT_PARENTHESIS)
         {
-            s_out += " function returning";
+            //s_out += " function returning";
 
             Match(ctx);
             if (Token(ctx) != Tokens.TK_RIGHT_PARENTHESIS)
@@ -775,9 +775,9 @@ function Direct_Declarator(ctx: Parser)
         {
             //[
             Match(ctx);
-            s_out += " Array";
-            s_out += Lexeme(ctx);
-            s_out += "] of";
+            //s_out += " Array";
+            //s_out += Lexeme(ctx);
+            //s_out += "] of";
             //]
             Match(ctx);
         }
@@ -863,7 +863,7 @@ function Declarator(ctx: Parser)
     //desempilhar apontado para
     while (ns--)
     {
-        s_out += " pointer to";
+        //s_out += " pointer to";
     }
 }
 

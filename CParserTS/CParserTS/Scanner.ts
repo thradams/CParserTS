@@ -654,6 +654,7 @@ function Scanner_IsLexeme(scanner: Scanner, psz: const_char): boolean
     return StrCmp(StrBuilder_Str(scanner.lexeme), psz);
 }
 
+
 //////////////////////////////////////////////
 
 class PrScanner
@@ -679,6 +680,17 @@ function PrScanner_Top(pPrScanner: PrScanner): Scanner
 {
     return pPrScanner.scanner;
 }
+
+function PrScanner_Line(scanner: PrScanner): int
+{
+    return PrScanner_Top(scanner).stream.currentLine;
+}
+
+function PrScanner_Col(scanner: PrScanner): int
+{
+    return PrScanner_Top(scanner).stream.currentCol;
+}
+
 
 function PrScanner_Next(pPrScanner: PrScanner): boolean
 {
