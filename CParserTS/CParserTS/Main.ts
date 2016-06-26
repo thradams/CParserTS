@@ -47,7 +47,7 @@ function Main()
     //WriteLine("-------------------------------------");
 
     //PrintTokensPre(StrBuilder_Str(strBuilder));
-
+    
     var parser = new Parser();
     Parser_Init(parser, StrBuilder_Str(strBuilder));
     Next(parser);
@@ -61,7 +61,7 @@ function Main()
     {
         WriteLine("Succeeded");
     }
-
+    
     Parser_Destroy(parser);
     StrBuilder_Destroy(strBuilder);
 }

@@ -1,6 +1,200 @@
 
+function GetPrecedence(token: Tokens): int
+{
+    //quanto mais alta a precedencia
+    //mais no fim o operador é feito
+    //http://en.cppreference.com/w/c/language/operator_precedence
+
+    var iResult = -1;
+    switch (token)
+    {
+        //1
+        case Tokens.FULL_STOP:
+            iResult = 1;
+            break;
+        //2
+        case Tokens.EXCLAMATION_MARK:
+            iResult = 2;
+            break;
+        //3
+        case Tokens.TK_ASTERISK:
+        case Tokens.PERCENT_SIGN:
+            iResult = 3;
+            break;
+        //4
+        case Tokens.PLUS_SIGN:
+        case Tokens.HYPHEN_MINUS:
+            iResult = 4;
+            break;
+        //5
+        //>> <<
+
+        //6
+        case Tokens.LESS_THAN_SIGN:
+        case Tokens.GREATER_THAN_SIGN:
+            iResult = 6;
+            break;
+        //7
+        //==
+
+        //8 &
+        case Tokens.AMPERSAND:
+            iResult = 8;
+            break;
+        //9
+        //10
+        //11
+        
+        //12
+        //||
+
+        //13
+        //14
+        case Tokens.TK_EQUALS_SIGN:
+            iResult = 14;
+        //15
+        case Tokens.TK_COMMA:
+            iResult = 15;
+            break;
+    }
+    return iResult;
+}
+
+function IsLeftAssociative(token: Tokens)
+{
+
+    var bResult = false;
+    switch (token)
+    {
+        case Tokens.PLUS_SIGN:
+        case Tokens.HYPHEN_MINUS:
+        case Tokens.TK_ASTERISK:
+            bResult = true;
+            break;
+
+        case Tokens.TK_EQUALS_SIGN:
+            bResult = true;
+            break;
+
+        case Tokens.TK_COMMA:
+            bResult = true;
+            break;
+    }
+    return bResult;
+}
+
+function IsRightAssociative(token: Tokens)
+{
+    return !IsLeftAssociative(token);
+}
+
+
+//https://en.wikipedia.org/wiki/Shunting-yard_algorithm
+//http://en.cppreference.com/w/c/language/operator_precedence
+function Expression2(ctx: Parser)
+{
+    var outStack = new ScannerItemStack();
+    var operatorStack = new ScannerItemStack();
+    ScannerItemStack_Init(outStack);
+    ScannerItemStack_Init(operatorStack);
+    var bStop = false;
+    for (; ;)
+    {
+        //fim da expressao
+        if (Token(ctx) == Tokens.TK_SEMICOLON || HasErrors(ctx) || bStop)
+            break;
+
+        if (Token(ctx) == Tokens.TK_number)
+        {
+            MatchAndPush(ctx, outStack);
+        }
+        else if (Token(ctx) == Tokens.TK_identifier)
+        {
+            var item = new ScannerItem();
+            ScannerItem_Init(item);
+            MatchAndGet(ctx, item);
+            if (Token(ctx) == Tokens.TK_LEFT_PARENTHESIS)
+            {
+                //eh uma funcao
+                ScannerItemStack_PushMove(operatorStack, item);
+            }
+            else
+            {
+                //eh uma variavel
+                ScannerItemStack_PushMove(outStack, item);
+            }
+            ScannerItem_Destroy(item);
+        }
+        //verifica se eh operador pela funcao de precedencia
+        else if (GetPrecedence(Token(ctx)) != -1) 
+        {
+            var o1 = Token(ctx);
+            while (!ScannerItemStack_IsEmpty(operatorStack))
+            {
+                var o2 = ScannerItemStack_TopToken(operatorStack);
+                if ((IsLeftAssociative(o1) && GetPrecedence(o1) >= GetPrecedence(o2)) ||
+                    (IsRightAssociative(o1) && GetPrecedence(o1) >= GetPrecedence(o2)))
+                {
+                    ScannerItemStack_PopPushTo(operatorStack, outStack);
+                }
+                else
+                    break;
+            }
+            MatchAndPush(ctx, operatorStack);
+        }
+        else if (Token(ctx) == Tokens.TK_LEFT_PARENTHESIS)
+        {
+            MatchAndPush(ctx, operatorStack);
+        }
+        else if (Token(ctx) == Tokens.TK_RIGHT_PARENTHESIS)
+        {
+            for (; ;)
+            {
+                if (ScannerItemStack_IsEmpty(operatorStack))
+                {
+                    bStop = true; //mismatched parentheses?                    
+                    break;
+                }
+
+                if (ScannerItemStack_TopToken(operatorStack) == Tokens.TK_LEFT_PARENTHESIS)
+                {
+                    ScannerItemStack_Pop(operatorStack);
+                    break;
+                }
+
+                ScannerItemStack_PopPushTo(operatorStack, outStack);
+            }
+        }
+    }
+
+    while (!ScannerItemStack_IsEmpty(operatorStack))
+    {
+        if (ScannerItemStack_TopToken(operatorStack) == Tokens.TK_LEFT_PARENTHESIS ||
+            ScannerItemStack_TopToken(operatorStack) == Tokens.TK_RIGHT_PARENTHESIS)
+        {
+            SetError(ctx, "mismatch ( )");
+            break;
+        }
+        ScannerItemStack_PopPushTo(operatorStack, outStack);
+    }
+
+    ///////////////
+    //js debug
+    var debug_text = "";
+    for (var i = 0; i < outStack.js_stack.length; i++)
+    {
+        debug_text += " " + outStack.js_stack[i].lexeme.js_text;
+    }
+    WriteLine(debug_text);
+    //////////////
+
+    ScannerItemStack_Destroy(outStack);
+    ScannerItemStack_Destroy(operatorStack);
+}
+
 function Expression(ctx: Parser)
 {
+    //Provisorio faz o parser correto "passando reto"
     for (; ;)
     {
         if (HasErrors(ctx))
@@ -251,7 +445,7 @@ function Statement(ctx: Parser)
             bResult = true;
             Selection_Statement(ctx);
             break;
-                    
+
         case Tokens.ELSE:
             //Ele tem que estar fazendo os statement do IF!
             bResult = true;
@@ -779,7 +973,7 @@ function Direct_Declarator(ctx: Parser)
             {
                 Parameter_Type_List(ctx);
             }
-            MatchToken(ctx, Tokens.TK_RIGHT_PARENTHESIS);           
+            MatchToken(ctx, Tokens.TK_RIGHT_PARENTHESIS);
         }
         else if (Token(ctx) == Tokens.TK_LEFT_SQUARE_BRACKET)
         {
@@ -793,7 +987,7 @@ function Direct_Declarator(ctx: Parser)
             if (Type_Qualifier(ctx))
             {
                 //direct-declarator [ type-qualifier-list static assignment-expression ]
-                MatchToken(ctx, Tokens.TK_static);                
+                MatchToken(ctx, Tokens.TK_static);
                 Assignment_Expression(ctx);
             }
             else
@@ -815,9 +1009,9 @@ function Direct_Declarator(ctx: Parser)
                     {
                         Assignment_Expression(ctx);
                     }
-                }                
+                }
             }
-                                   
+
             MatchToken(ctx, Tokens.TK_RIGHT_SQUARE_BRACKET);
         }
         else

@@ -51,12 +51,13 @@ function Match(parser: Parser): Result
     return RESULT_OK;
 }
 
-function MatchAndGetLexeme(parser: Parser, strBuilder: StrBuilder): Result
+function MatchAndGet(parser: Parser, scannerItem: ScannerItem): Result
 {
     if (parser.bError)
         return RESULT_FAIL;
 
-    StrBuilder_Append(strBuilder, StrBuilder_Str(parser.scanner.scanner.lexeme));
+    ScannerItem_Swap(parser.scanner.scanner.currentItem, scannerItem);
+    
     var b = Next(parser);
 
     if (!b)
@@ -67,6 +68,15 @@ function MatchAndGetLexeme(parser: Parser, strBuilder: StrBuilder): Result
     return RESULT_OK;
 }
 
+function MatchAndPush(parser: Parser, stack: ScannerItemStack): Result
+{
+    var item = new ScannerItem();
+    ScannerItem_Init(item);
+    var result = MatchAndGet(parser, item);
+    ScannerItemStack_PushMove(stack, item);
+    ScannerItem_Destroy(item);
+    return result;    
+}
 
 function MatchToken(parser: Parser, tk: Tokens): Result
 {
@@ -76,7 +86,7 @@ function MatchToken(parser: Parser, tk: Tokens): Result
         return RESULT_FAIL;
     }
 
-    if (tk != parser.scanner.scanner.token)
+    if (tk != parser.scanner.scanner.currentItem.token)
     {
         parser.bError = true;
         SetError(parser, "Unexpected token");
@@ -132,7 +142,7 @@ function Token(parser: Parser): Tokens
         return Tokens.Error;
     }
 
-    return parser.scanner.scanner.token;
+    return parser.scanner.scanner.currentItem.token;
 }
 
 function Next(parser: Parser): boolean
@@ -143,7 +153,7 @@ function Next(parser: Parser): boolean
     }
 
     var b = PrScanner_Next(parser.scanner);
-    parser.debug_string = parser.scanner.scanner.lexeme.js_text;
+    parser.debug_string = parser.scanner.scanner.currentItem.lexeme.js_text;
     return b;
 }
 

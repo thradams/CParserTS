@@ -39,6 +39,14 @@ function StrBuilder_Size(pStrBuilder: StrBuilder): number
     return pStrBuilder.js_text.length;
 
 }
+
+function StrBuilder_Swap(strBuilder: StrBuilder, other: StrBuilder)
+{
+    var s = other.js_text;
+    other.js_text = strBuilder.js_text;
+    strBuilder.js_text = s;
+}
+
 function StrBuilder_Append(pStrBuilder: StrBuilder, text: wchar_t)
 {
     pStrBuilder.js_text += text;
@@ -53,7 +61,6 @@ function StrBuilder_AppendInt(pStrBuilder: StrBuilder, n: int)
 function StrBuilder_Clear(pStrBuilder: StrBuilder)
 {
     return pStrBuilder.js_text = "";
-
 }
 
 function StrBuilder_AppendJsonText(pStrBuilder: StrBuilder, text: wchar_t)
